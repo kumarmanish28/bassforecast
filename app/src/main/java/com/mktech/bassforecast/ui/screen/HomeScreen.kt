@@ -1,11 +1,13 @@
 package com.mktech.bassforecast.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -23,13 +25,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mktech.bassforecast.state.WeatherUiState
 import com.mktech.bassforecast.ui.component.CurrentlyWeather
 import com.mktech.bassforecast.ui.component.HourlyForecastRow
-import com.mktech.bassforecast.ui.theme.BLACK
-import com.mktech.bassforecast.ui.theme.Pink80
+import com.mktech.bassforecast.ui.theme.Primary
+import com.mktech.bassforecast.ui.theme.Top_Label
 import com.mktech.bassforecast.viewmodel.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,10 +43,25 @@ fun HomeScreen(viewModel: WeatherViewModel, onRetry: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = city) },
+                title = {
+                    Column(modifier = Modifier.wrapContentSize()) {
+                        Text(
+                            text = "CURRENT LOCATION",
+                            fontSize = 14.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = Top_Label
+                        )
+                        Text(
+                            modifier = Modifier.offset(y = (-5).dp),
+                            text = city,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = Color.White
+                        )
+                    } },
                 colors = TopAppBarColors(
-                    titleContentColor = BLACK,
-                    containerColor = Pink80,
+                    titleContentColor = Color.White,
+                    containerColor = Primary,
                     scrolledContainerColor = Color.Unspecified,
                     navigationIconContentColor = Color.Unspecified,
                     actionIconContentColor = Color.Unspecified,
@@ -53,15 +71,17 @@ fun HomeScreen(viewModel: WeatherViewModel, onRetry: () -> Unit) {
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .background(color = Primary)
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(12.dp)
+                .padding(horizontal = 12.dp, vertical = 5.dp)
         ) {
 
             when (val state = uiState) {
                 is WeatherUiState.Loading -> {
-                    // Show loading indicator
-                    CircularProgressIndicator()
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment =  Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
 
                 is WeatherUiState.Success -> {
@@ -70,8 +90,9 @@ fun HomeScreen(viewModel: WeatherViewModel, onRetry: () -> Unit) {
 
                     Text(
                         text = "Hourly Forecast",
-                        fontSize = 18.sp,
-                        color = Color.Black
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     LazyColumn(modifier = Modifier.fillMaxWidth()) {

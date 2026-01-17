@@ -1,6 +1,8 @@
 package com.mktech.bassforecast.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -35,7 +38,9 @@ fun CurrentlyWeather(currentWeather: CurrentWeather) {
         colors = CardDefaults.cardColors(
             containerColor = CardBg
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Box(
             modifier = Modifier

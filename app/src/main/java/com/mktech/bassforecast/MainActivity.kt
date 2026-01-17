@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setupPermissionLauncher()
         viewModel.initializeLocationManager(permissionLauncher)
 
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContent {
             BassForecastTheme {
                 HomeScreen(

@@ -1,5 +1,6 @@
 package com.mktech.bassforecast.ui.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.mktech.bassforecast.data.model.HourlyForecast
 import com.mktech.bassforecast.ui.theme.CardBg
 import com.mktech.bassforecast.ui.theme.DarkBg
+import com.mktech.bassforecast.ui.theme.IconCardBg
 import com.mktech.bassforecast.utils.MyConstant
 import com.mktech.bassforecast.utils.Utility
 
@@ -39,11 +41,13 @@ fun HourlyForecastRow(hourlyForecast: HourlyForecast) {
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .padding(2.dp),
+            .padding(horizontal = 2.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = CardBg
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(20.dp)
     ) {
 
         Row(
@@ -54,8 +58,9 @@ fun HourlyForecastRow(hourlyForecast: HourlyForecast) {
             Box(
                 modifier = Modifier
                     .weight(0.5f)
-                    .size(36.dp)
-                    .background(color = DarkBg, shape = RoundedCornerShape(10.dp)),
+                    .width(36.dp)
+                    .height(48.dp)
+                    .background(color = IconCardBg, shape = RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
