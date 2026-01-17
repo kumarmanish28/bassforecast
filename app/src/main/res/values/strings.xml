@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BassForecast</string>
+    <string name="location_permission_denied">Location permission denied</string>
+    <string name="location_services_required_title">Location Services Required</string>
+    <string name="location_services_required_message">Please enable location services to get weather for your area.</string>
+    <string name="enable">Enable</string>
+    <string name="cancel">Cancel</string>
+    <string name="location_permission_required">Location permission required</string>
+    <string name="using_default_location">Using default location: %s</string>
+</resources>
