@@ -80,7 +80,9 @@ fun HomeScreen(viewModel: WeatherViewModel, onRetry: () -> Unit) {
             when (val state = uiState) {
                 is WeatherUiState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment =  Alignment.Center) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = Color.White
+                        )
                     }
                 }
 

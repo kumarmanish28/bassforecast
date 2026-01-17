@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.mktech.bassforecast.ui.screen.HomeScreen
 import com.mktech.bassforecast.ui.theme.BassForecastTheme
-import com.mktech.bassforecast.utils.LocationManager
 import com.mktech.bassforecast.viewmodel.WeatherViewModel
 import com.mktech.bassforecast.viewmodel.WeatherViewModelFactory
 
@@ -18,7 +16,6 @@ class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels {
         WeatherViewModelFactory(application)
     }
-    private lateinit var locationManager: LocationManager
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +44,7 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                locationManager.getCurrentLocationModern()
+                viewModel.locationManager.getCurrentLocationModern()
             } else {
                 showPermissionDeniedMessage()
                 viewModel.useDefaultLocation()

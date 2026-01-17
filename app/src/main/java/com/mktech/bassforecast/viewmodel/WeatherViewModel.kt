@@ -15,6 +15,7 @@ import com.mktech.bassforecast.utils.MyConstant.DEFAULT_LATITUDE
 import com.mktech.bassforecast.utils.MyConstant.DEFAULT_LONGITUDE
 import com.mktech.bassforecast.utils.Utility
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     val cityName: StateFlow<String> = _cityName
 
     // Location
-    private lateinit var locationManager: LocationManager
+    lateinit var locationManager: LocationManager
     private var locationPermissionLauncher: ActivityResultLauncher<String>? = null
 
     // State tracking
@@ -57,7 +58,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 viewModelScope.launch(Dispatchers.Main) {
                     _uiState.value = WeatherUiState.Error(errorMessage)
                     // Fallback to default after delay
-                    kotlinx.coroutines.delay(2000)
+                    delay(2000)
                     useDefaultLocation()
                 }
             },
@@ -67,8 +68,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 }
             },
             onLocationServicesDisabled = {
-                // Activity can handle this dialog
-                // We'll just use default location
                 viewModelScope.launch(Dispatchers.Main) {
                     useDefaultLocation()
                 }
