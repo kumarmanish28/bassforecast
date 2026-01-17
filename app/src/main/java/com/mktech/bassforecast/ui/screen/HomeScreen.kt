@@ -52,9 +52,9 @@ fun HomeScreen(viewModel: WeatherViewModel, onRetry: () -> Unit) {
                             color = Top_Label
                         )
                         Text(
-                            modifier = Modifier.offset(y = (-5).dp),
+                            modifier = Modifier.offset(y = (-6).dp),
                             text = city,
-                            fontSize = 16.sp,
+                            fontSize = 22.sp,
                             fontFamily = FontFamily.Monospace,
                             color = Color.White
                         )
