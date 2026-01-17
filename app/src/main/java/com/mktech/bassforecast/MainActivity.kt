@@ -7,31 +7,35 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import com.mktech.bassforecast.data.remote.RetrofitClient
 import com.mktech.bassforecast.ui.screen.HomeScreen
 import com.mktech.bassforecast.ui.theme.BassForecastTheme
+import com.mktech.bassforecast.utils.LocationManager
 import com.mktech.bassforecast.viewmodel.WeatherViewModel
 import com.mktech.bassforecast.viewmodel.WeatherViewModelFactory
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: WeatherViewModel by viewModels {
-        WeatherViewModelFactory(application)
-    }
+
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
+
+    private val viewModel: WeatherViewModel by viewModels {
+        WeatherViewModelFactory(
+            application = application,
+            weatherApi = RetrofitClient.weatherApiService,
+            locationManager = createLocationManager()
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupPermissionLauncher()
-        viewModel.initializeLocationManager(permissionLauncher)
 
-//        enableEdgeToEdge()
         setContent {
             BassForecastTheme {
                 HomeScreen(
                     viewModel = viewModel,
-                    onRetry = {
-                        viewModel.retryLocation()
-                    }
+                    onRetry = { viewModel.retryLocation() }
                 )
             }
         }
@@ -44,7 +48,7 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                viewModel.locationManager.getCurrentLocationModern()
+                viewModel.requestCurrentLocation()
             } else {
                 showPermissionDeniedMessage()
                 viewModel.useDefaultLocation()
@@ -59,5 +63,28 @@ class MainActivity : ComponentActivity() {
         ).show()
     }
 
+    private fun createLocationManager(): LocationManager {
+        val manager = LocationManager(
+            context = this,
+            onLocationReceived = { lat, lon ->
+                viewModel.setLocationAndFetch(lat, lon)
+            },
+            onError = { error ->
+                viewModel.useDefaultLocation()
+            },
+            onPermissionDenied = {
+                showPermissionDeniedMessage()
+            },
+            onLocationServicesDisabled = {
+                viewModel.useDefaultLocation()
+            }
+        )
+
+        manager.initialize(permissionLauncher)
+
+        return manager
+    }
+
 
 }
+

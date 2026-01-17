@@ -3,11 +3,10 @@ package com.mktech.bassforecast.viewmodel
 import android.app.Application
 import android.location.Geocoder
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.mktech.bassforecast.data.model.HourlyForecast
-import com.mktech.bassforecast.data.remote.RetrofitClient
+import com.mktech.bassforecast.data.remote.WeatherApiService
 import com.mktech.bassforecast.data.remote.response.HourlyWeather
 import com.mktech.bassforecast.state.WeatherUiState
 import com.mktech.bassforecast.utils.LocationManager
@@ -15,7 +14,6 @@ import com.mktech.bassforecast.utils.MyConstant.DEFAULT_LATITUDE
 import com.mktech.bassforecast.utils.MyConstant.DEFAULT_LONGITUDE
 import com.mktech.bassforecast.utils.Utility
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,60 +21,23 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.roundToInt
 
-class WeatherViewModel(application: Application) : AndroidViewModel(application) {
+class WeatherViewModel(
+    application: Application,
+    private val weatherApi: WeatherApiService,
+    private val locationManager: LocationManager
+) : AndroidViewModel(application) {
     private val context = application.applicationContext
-    private val api = RetrofitClient.weatherApiService
-
-    // UI State
     private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Loading)
     val uiState: StateFlow<WeatherUiState> = _uiState
-
     private val _cityName = MutableStateFlow<String>("Base Forecast")
     val cityName: StateFlow<String> = _cityName
-
-    // Location
-    lateinit var locationManager: LocationManager
-    private var locationPermissionLauncher: ActivityResultLauncher<String>? = null
-
-    // State tracking
     private var hasInitializedLocation = false
     private var currentLatitude: Double? = null
     private var currentLongitude: Double? = null
 
-    fun initializeLocationManager(permissionLauncher: ActivityResultLauncher<String>) {
-        this.locationPermissionLauncher = permissionLauncher
-
-        locationManager = LocationManager(
-            context = context,
-            onLocationReceived = { lat, lon ->
-                // This callback runs on background thread
-                viewModelScope.launch(Dispatchers.Main) {
-                    setLocationAndFetch(lat, lon)
-                }
-            },
-            onError = { errorMessage ->
-                viewModelScope.launch(Dispatchers.Main) {
-                    _uiState.value = WeatherUiState.Error(errorMessage)
-                    // Fallback to default after delay
-                    delay(2000)
-                    useDefaultLocation()
-                }
-            },
-            onPermissionDenied = {
-                viewModelScope.launch(Dispatchers.Main) {
-                    _uiState.value = WeatherUiState.Error("Location permission denied")
-                }
-            },
-            onLocationServicesDisabled = {
-                viewModelScope.launch(Dispatchers.Main) {
-                    useDefaultLocation()
-                }
-            }
-        )
-
-        locationManager.initialize(permissionLauncher)
+    fun requestCurrentLocation() {
+        locationManager.getCurrentLocationModern()
     }
-
 
     fun requestLocationOnce() {
         if (!hasInitializedLocation) {
@@ -87,11 +48,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             Log.d("WeatherViewModel", "Location already initialized, not requesting again")
         }
     }
-
     fun retryLocation() {
         locationManager.requestLocationWithPermissionCheck()
     }
-
     fun setLocationAndFetch(latitude: Double, longitude: Double) {
         val currentState = _uiState.value
         if (currentState is WeatherUiState.Success &&
@@ -100,7 +59,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             Log.d("WeatherViewModel", "Already have data for this location, skipping")
             return
         }
-
         currentLatitude = latitude
         currentLongitude = longitude
         fetchAllData(latitude, longitude)
@@ -142,7 +100,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             _uiState.value = WeatherUiState.Loading
             try {
-                val response = api.getWeatherForecast(
+                val response = weatherApi.getWeatherForecast(
                     latitude = latitude,
                     longitude = longitude,
                     current = "temperature_2m,weathercode,wind_speed_10m",
@@ -173,22 +131,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
-
-    fun retryWithCurrentLocation() {
-        currentLatitude?.let { lat ->
-            currentLongitude?.let { lon ->
-                fetchWeather(lat, lon)
-            }
-        } ?: run {
-            // If no current location, request new location
-            retryLocation()
-        }
-    }
-
     fun useDefaultLocation() {
         setLocationAndFetch(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
     }
-
     private fun mapHourlyData(hourly: HourlyWeather): List<HourlyForecast> {
         return (0 until minOf(24, hourly.time.size)).map { i ->
             HourlyForecast(

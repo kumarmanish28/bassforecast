@@ -174,7 +174,6 @@ class LocationManager(
     }
 
     private fun requestLocationPermission() {
-        Log.d(TAG, "Requesting location permission")
         permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
