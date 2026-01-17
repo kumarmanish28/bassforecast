@@ -1,51 +1,146 @@
-🌤️ BassForecast - Weather Forecast App
-A clean, modern Android weather application built with Jetpack Compose that displays current weather and 24-hour forecasts using the Open-Meteo API.
+🌤️ Bass Forecast – Weather App (Android)
 
-📱 Features
-Current Weather Display: Shows temperature, weather condition, and wind speed
+Bass Forecast is a modern Android weather application built using Jetpack Compose and MVVM architecture.
+It fetches real-time weather data based on the user’s current location and displays hourly forecasts in a clean, dark-themed UI.
 
-24-Hour Forecast: Hour-by-hour weather predictions with 12-hour AM/PM format
+🚀 Features
 
-Responsive UI: Built with Jetpack Compose with proper state management
+📍 Current location-based weather
 
-Error Handling: Graceful error states with retry functionality
+🌡️ Real-time temperature, wind speed, and conditions
 
-MVVM Architecture: Follows Android recommended architecture pattern
+🕒 Hourly weather forecast (next 24 hours)
 
-Location Services: Automatic location detection with fallback to default
+🗺️ City name detection using Geocoder
 
-🛠️ Tech Stack
-Language: Kotlin
+📡 Open-Meteo API integration
 
-UI: Jetpack Compose
+🔐 Runtime location permission handling
 
-Architecture: MVVM (Model-View-ViewModel)
+⚡ Manual Dependency Injection (No Hilt/Dagger)
 
-Networking: Retrofit with Kotlin Coroutines
+🎨 Jetpack Compose UI
 
-State Management: StateFlow
+🏗️ Architecture
 
-Location: Fused Location Provider
+The app follows MVVM (Model–View–ViewModel):
 
-DI: Manual Dependency Injection
+UI (Compose) → ViewModel → API / Location Manager
+
+Key Principles:
+
+UI does NOT contain business logic
+
+ViewModel handles all data & state
+
+Dependencies are injected manually from Activity
+
+No Clean Architecture layers (simple MVVM)
+
+📁 Package Structure
+com.mktech.bassforecast
+
+├── data
+│   ├── model
+│   └── remote
+│
+├── state
+│
+├── ui
+│
+├── utils
+│
+└── viewmodel
+
+🔌 Tech Stack
+
+Kotlin
+
+Jetpack Compose
+
+MVVM
+
+Retrofit
+
+Coroutines + StateFlow
+
+Google Location Services
+
+Open-Meteo API
+
+📍 Permissions Used
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+🌐 Weather API
+
+Data is fetched from:
+
+https://api.open-meteo.com/v1/forecast
 
 
-📋 Requirements
-API: Open-Meteo (https://api.open-meteo.com)
+Example parameters:
 
-Minimum SDK: Android 8.0 (API 26)
+latitude
 
-Compile SDK: Android 16 (API 36)
+longitude
 
-🚀 Key Implementation Details
-1. API Integration
-Uses Open-Meteo API (no API key required)
+current: temperature, weather code, wind speed
 
-Handles parallel arrays from API response
+hourly: forecast data
 
-Maps to domain objects using WeatherMapper
+🧠 Manual Dependency Injection
 
-Limited to 24 hours forecast as per requirements
+No Hilt or Dagger is used.
+All dependencies (API, LocationManager) are provided from MainActivity using:
 
+WeatherViewModelFactory
 
+Constructor injection
 
+This keeps the app:
+
+Lightweight
+
+Easy to understand
+
+Test-friendly
+
+🖥️ UI Preview
+
+The UI includes:
+
+Current location & temperature header
+
+Hourly forecast cards
+
+Weather icons
+
+Wind information
+
+Dark modern design
+
+▶️ How to Run
+
+Clone the repository
+
+Open in Android Studio
+
+Sync Gradle
+
+Run on a real device (location required)
+
+Allow location permission
+
+⚠️ Notes
+
+Location works best on real devices (not emulator)
+
+Internet connection is required
+
+If permission is denied, a default location is used
+
+👨‍💻 Author
+
+Manish Kumar
+Android Developer | Kotlin | Jetpack Compose
